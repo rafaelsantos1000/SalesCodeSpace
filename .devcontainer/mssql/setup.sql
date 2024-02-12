@@ -1,2 +1,3 @@
-CREATE DATABASE ApplicationDB;
+SELECT name
+FROM sys.databases;
 GO
