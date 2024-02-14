@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using SalesCodeSpace.Data;
 using SalesCodeSpace.Data.Entities;
+using SalesCodeSpace.Models;
 
 namespace SalesCodeSpace.Controllers
 {
@@ -22,7 +24,9 @@ namespace SalesCodeSpace.Controllers
         // GET: Countries
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Countries.ToListAsync());
+            return View(await _context.Countries
+                .Include(c => c.States)
+                .ToListAsync());
         }
 
         // GET: Countries/Details/5
@@ -34,6 +38,7 @@ namespace SalesCodeSpace.Controllers
             }
 
             var country = await _context.Countries
+                .Include(c => c.States)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (country == null)
             {
@@ -60,13 +65,13 @@ namespace SalesCodeSpace.Controllers
             {
                 try
                 {
-                     _context.Add(country);
+                    _context.Add(country);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
-                    if(dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
                         ModelState.AddModelError(string.Empty, "Já existe um país com o mesmo nome.");
                     }
@@ -75,7 +80,7 @@ namespace SalesCodeSpace.Controllers
                         ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
                     }
                 }
-                catch(Exception exception)
+                catch (Exception exception)
                 {
                     ModelState.AddModelError(string.Empty, exception.Message);
                 }
@@ -121,7 +126,7 @@ namespace SalesCodeSpace.Controllers
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
-                    if(dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
                         ModelState.AddModelError(string.Empty, "Já existe um país com o mesmo nome.");
                     }
@@ -130,7 +135,7 @@ namespace SalesCodeSpace.Controllers
                         ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
                     }
                 }
-                catch(Exception exception)
+                catch (Exception exception)
                 {
                     ModelState.AddModelError(string.Empty, exception.Message);
                 }
@@ -169,6 +174,67 @@ namespace SalesCodeSpace.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+
+        public async Task<IActionResult> AddState(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Country? country = await _context.Countries.FindAsync(id);
+            if (country == null)
+            {
+                return NotFound();
+            }
+
+            StateViewModel model = new()
+            {
+                CountryId = country.Id,
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddState([Bind("Id,Name,CountryId")] StateViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    State state = new()
+                    {
+                        Cities = new List<City>(),
+                        Country = await _context.Countries.FindAsync(model.CountryId),
+                        Name = model.Name
+                    };
+                    _context.Add(state);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Details), new { Id = model.CountryId });
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Já existe uma localidade ou estado com o mesmo nome.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+            }
+
+            return View(model);
         }
 
     }
