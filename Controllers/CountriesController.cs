@@ -237,5 +237,74 @@ namespace SalesCodeSpace.Controllers
             return View(model);
         }
 
+
+        public async Task<IActionResult> EditState(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            State state = await _context.States
+                .Include(s => s.Country)
+                .FirstOrDefaultAsync(s => s.Id == id);
+            if (state == null)
+            {
+                return NotFound();
+            }
+
+            StateViewModel model = new()
+            {
+                CountryId = state.Country.Id,
+                Id = state.Id,
+                Name = state.Name,
+            };
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditState(int id, [Bind("Id,Name,CountryId")] StateViewModel model)
+        {
+            if (id != model.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    State state = new()
+                    {
+                        Id = model.Id,
+                        Name = model.Name,
+                    };
+
+                    _context.Update(state);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Details), new { id = model.CountryId });
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Já existe uma localidade ou estado com o mesmo nome.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+
+            }
+            return View(model);
+        }
     }
 }
