@@ -1,4 +1,5 @@
 using System.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SalesCodeSpace.Data;
@@ -6,6 +7,7 @@ using SalesCodeSpace.Data.Entities;
 
 namespace SalesCodeSpace.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CategoriesController : Controller
     {
         private readonly DataContext _context;
@@ -56,13 +58,13 @@ namespace SalesCodeSpace.Controllers
             {
                 try
                 {
-                     _context.Add(category);
+                    _context.Add(category);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
-                    if(dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
                         ModelState.AddModelError(string.Empty, "Já existe uma categoría com o mesmo nome.");
                     }
@@ -71,7 +73,7 @@ namespace SalesCodeSpace.Controllers
                         ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
                     }
                 }
-                catch(Exception exception)
+                catch (Exception exception)
                 {
                     ModelState.AddModelError(string.Empty, exception.Message);
                 }
@@ -117,7 +119,7 @@ namespace SalesCodeSpace.Controllers
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
-                    if(dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
                         ModelState.AddModelError(string.Empty, "Já existe uma categoría com o mesmo nome.");
                     }
@@ -126,7 +128,7 @@ namespace SalesCodeSpace.Controllers
                         ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
                     }
                 }
-                catch(Exception exception)
+                catch (Exception exception)
                 {
                     ModelState.AddModelError(string.Empty, exception.Message);
                 }

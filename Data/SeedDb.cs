@@ -22,6 +22,7 @@ namespace SalesCodeSpace.Data
             await CheckCategoriesAsync();
             await CheckRolesAsync();
             await CheckUserAsync("1010", "Rafael", "Santos", "rafaelsantos@yopmail.com", "213658959", "Rua da Luz", UserType.Admin);
+            await CheckUserAsync("2020", "Madalena", "Santos", "madasantos@yopmail.com", "213658957", "Rua da Luz", UserType.User);
         }
 
         private async Task<User> CheckUserAsync

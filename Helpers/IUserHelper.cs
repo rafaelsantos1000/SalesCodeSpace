@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using SalesCodeSpace.Data.Entities;
+using SalesCodeSpace.Models;
 
 namespace SalesCodeSpace.Helpers
 {
@@ -14,6 +15,10 @@ namespace SalesCodeSpace.Helpers
         Task AddUserToRoleAsync(User user, string roleName);
 
         Task<bool> IsUserInRoleAsync(User user, string roleName);
+
+        Task<SignInResult> LoginAsync(LoginViewModel model);
+
+        Task LogoutAsync();
 
     }
 }
