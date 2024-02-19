@@ -45,7 +45,7 @@ namespace SalesCodeSpace.Helpers
             }
         }
 
-        public async Task<User> GetUserAsync(string email)
+        public async Task<User?> GetUserAsync(string email)
         {
             return await _context.Users
                 .Include(u => u.City)

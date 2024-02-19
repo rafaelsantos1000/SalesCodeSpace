@@ -6,7 +6,7 @@ namespace SalesCodeSpace.Helpers
 {
     public interface IUserHelper
     {
-        Task<User> GetUserAsync(string email);
+        Task<User?> GetUserAsync(string email);
 
         Task<IdentityResult> AddUserAsync(User user, string password);
 
