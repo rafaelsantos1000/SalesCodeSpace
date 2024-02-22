@@ -32,8 +32,8 @@ namespace SalesCodeSpace.Data.Entities
         //TODO: Pending to put the correct paths
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == Guid.Empty
-            ? $"https://localhost:7057/images/noimage.png"
-            : $"https://shoppingprep.blob.core.windows.net/users/{ImageId}";
+            ? $"http://localhost:5196/images/noimage.png"
+            : $"https://rafasaintssales2023.blob.core.windows.net/users/{ImageId}";
 
         [Display(Name = "Tipo de utilizador")]
         public UserType UserType { get; set; }

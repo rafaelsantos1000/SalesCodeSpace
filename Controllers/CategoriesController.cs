@@ -64,7 +64,7 @@ namespace SalesCodeSpace.Controllers
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
-                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                     {
                         ModelState.AddModelError(string.Empty, "Já existe uma categoría com o mesmo nome.");
                     }

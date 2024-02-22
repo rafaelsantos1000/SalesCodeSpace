@@ -40,7 +40,7 @@ namespace SalesCodeSpace.Controllers
             }
 
             var country = await _context.Countries
-                .Include(c => c.States)
+                .Include(c => c.States!)
                 .ThenInclude(s => s.Cities)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (country == null)
@@ -74,7 +74,7 @@ namespace SalesCodeSpace.Controllers
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
-                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                     {
                         ModelState.AddModelError(string.Empty, "Já existe um país com o mesmo nome.");
                     }
