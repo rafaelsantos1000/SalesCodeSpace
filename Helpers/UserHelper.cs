@@ -80,11 +80,21 @@ namespace SalesCodeSpace.Helpers
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
+        public async Task<User> GetUserAsync(Guid userId)
+    {
+        return await _context.Users
+            .Include(u => u.City)
+            .ThenInclude(c => c.State)
+            .ThenInclude(s => s.Country)
+            .FirstOrDefaultAsync(u => u.Id == userId.ToString());
+    }
+
         public async Task<bool> IsUserInRoleAsync(User user, string roleName)
         {
             return await _userManager.IsInRoleAsync(user, roleName);
         }
 
+        
         public async Task<SignInResult> LoginAsync(LoginViewModel model)
         {
             return await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
@@ -93,6 +103,16 @@ namespace SalesCodeSpace.Helpers
         public async Task LogoutAsync()
         {
             await _signInManager.SignOutAsync();
+        }
+
+        public async Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword)
+        {
+            return await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+        }
+
+        public async Task<IdentityResult> UpdateUserAsync(User user)
+        {
+            return await _userManager.UpdateAsync(user);
         }
     }
 }
