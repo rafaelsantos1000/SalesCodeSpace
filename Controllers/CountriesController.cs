@@ -129,7 +129,7 @@ namespace SalesCodeSpace.Controllers
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
-                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                     {
                         ModelState.AddModelError(string.Empty, "Já existe um país com o mesmo nome.");
                     }
@@ -222,7 +222,7 @@ namespace SalesCodeSpace.Controllers
                 catch (DbUpdateException dbUpdateException)
                 {
 
-                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                     {
                         ModelState.AddModelError(string.Empty, "Já existe uma localidade ou estado com o mesmo nome.");
                     }
@@ -248,7 +248,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            State state = await _context.States
+            State? state = await _context.States
                 .Include(s => s.Country)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (state == null)
@@ -258,7 +258,7 @@ namespace SalesCodeSpace.Controllers
 
             StateViewModel model = new()
             {
-                CountryId = state.Country.Id,
+                CountryId = state.Country!.Id,
                 Id = state.Id,
                 Name = state.Name,
             };
@@ -292,7 +292,7 @@ namespace SalesCodeSpace.Controllers
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
-                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                     {
                         ModelState.AddModelError(string.Empty, "Já existe uma localidade ou estado com o mesmo nome.");
                     }
@@ -318,7 +318,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            State state = await _context.States
+            State? state = await _context.States
                 .Include(s => s.Country)
                 .Include(s => s.Cities)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -370,7 +370,7 @@ namespace SalesCodeSpace.Controllers
                 catch (DbUpdateException dbUpdateException)
                 {
 
-                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                     {
                         ModelState.AddModelError(string.Empty, "Já existe uma cidade com o mesmo nome nesta localidade/estado.");
                     }
@@ -396,7 +396,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            City city = await _context.Cities
+            City? city = await _context.Cities
                 .Include(c => c.State)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -404,7 +404,7 @@ namespace SalesCodeSpace.Controllers
 
             CityViewModel model = new()
             {
-                StateId = city.State.Id,
+                StateId = city.State!.Id,
                 Id = city.Id,
                 Name = city.Name,
             };
@@ -438,7 +438,7 @@ namespace SalesCodeSpace.Controllers
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
-                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                     {
                         ModelState.AddModelError(string.Empty, "Já existe uma cidade com o mesmo nome nessa localidade/estado.");
                     }
