@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace SalesCodeSpace.Data.Entities
 {
@@ -11,6 +12,7 @@ namespace SalesCodeSpace.Data.Entities
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         public string? Name { get; set; }
 
+        [JsonIgnore]
         public State? State { get; set; }
 
         public ICollection<User>? Users { get; set; }
