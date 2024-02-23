@@ -77,24 +77,26 @@ namespace SalesCodeSpace.Helpers
         {
             return await _context.Users
                 .Include(u => u.City)
+                .ThenInclude(c => c!.State)
+                .ThenInclude(s => s!.Country)
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public async Task<User> GetUserAsync(Guid userId)
-    {
-        return await _context.Users
-            .Include(u => u.City)
-            .ThenInclude(c => c.State)
-            .ThenInclude(s => s.Country)
-            .FirstOrDefaultAsync(u => u.Id == userId.ToString());
-    }
+        public async Task<User?> GetUserAsync(Guid userId)
+        {
+            return await _context.Users
+                .Include(u => u.City)
+                .ThenInclude(c => c!.State)
+                .ThenInclude(s => s!.Country)
+                .FirstOrDefaultAsync(u => u.Id == userId.ToString());
+        }
 
         public async Task<bool> IsUserInRoleAsync(User user, string roleName)
         {
             return await _userManager.IsInRoleAsync(user, roleName);
         }
 
-        
+
         public async Task<SignInResult> LoginAsync(LoginViewModel model)
         {
             return await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
