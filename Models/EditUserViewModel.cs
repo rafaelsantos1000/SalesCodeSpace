@@ -37,7 +37,7 @@ namespace SalesCodeSpace.Models
 
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == Guid.Empty
-            ? $"https://localhost:5196/images/noimage.png"
+            ? $"http://localhost:5196/images/noimage.png"
             : $"https://rafasaintssales2023.blob.core.windows.net/users/{ImageId}";
 
         [Display(Name = "Imagem")]

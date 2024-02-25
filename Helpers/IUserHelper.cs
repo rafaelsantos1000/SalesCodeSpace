@@ -8,7 +8,7 @@ namespace SalesCodeSpace.Helpers
     {
         Task<User?> GetUserAsync(string email);
 
-        Task<User> GetUserAsync(Guid userId);
+        Task<User?> GetUserAsync(Guid userId);
 
         Task<IdentityResult> AddUserAsync(User user, string password);
 
