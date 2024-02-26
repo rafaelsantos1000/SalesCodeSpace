@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Primitives;
 using SalesCodeSpace.Data.Entities;
 using SalesCodeSpace.Enums;
 using SalesCodeSpace.Helpers;
@@ -34,7 +35,7 @@ namespace SalesCodeSpace.Data
         string address,
         UserType userType)
         {
-            User user = await _userHelper.GetUserAsync(email);
+            User? user = await _userHelper.GetUserAsync(email);
             if (user == null)
             {
                 user = new User
@@ -52,6 +53,9 @@ namespace SalesCodeSpace.Data
 
                 await _userHelper.AddUserAsync(user, "123456");
                 await _userHelper.AddUserToRoleAsync(user, userType.ToString());
+
+                string token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                await _userHelper.ConfirmEmailAsync(user, token);
             }
 
             return user;

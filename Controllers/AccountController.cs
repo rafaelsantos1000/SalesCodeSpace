@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SalesCodeSpace.Data;
@@ -5,6 +6,7 @@ using SalesCodeSpace.Data.Entities;
 using SalesCodeSpace.Enums;
 using SalesCodeSpace.Helpers;
 using SalesCodeSpace.Models;
+using SalesCodeSpace.Responses;
 
 namespace SalesCodeSpace.Controllers
 {
@@ -14,13 +16,15 @@ namespace SalesCodeSpace.Controllers
         private readonly DataContext _context;
         private readonly ICombosHelper _combosHelper;
         private readonly IBlobHelper _blobHelper;
+        private readonly IMailHelper _mailHelper;
 
-        public AccountController(IUserHelper userHelper, DataContext context, ICombosHelper combosHelper, IBlobHelper blobHelper)
+        public AccountController(IUserHelper userHelper, DataContext context, ICombosHelper combosHelper, IBlobHelper blobHelper, IMailHelper mailHelper)
         {
             _userHelper = userHelper;
             _context = context;
             _combosHelper = combosHelper;
             _blobHelper = blobHelper;
+            _mailHelper = mailHelper;
         }
 
 
@@ -49,6 +53,10 @@ namespace SalesCodeSpace.Controllers
                 if (result.IsLockedOut)
                 {
                     ModelState.AddModelError(string.Empty, "Foi superado o número máximo de tentativas, a sua conta está bloqueada, tente novamente mais tarde.");
+                }
+                else if (result.IsNotAllowed)
+                {
+                    ModelState.AddModelError(string.Empty, "O utilizador ainda não foi confirmado, deve seguir as instruções enviadas para o email.");
                 }
                 else
                 {
@@ -111,19 +119,27 @@ namespace SalesCodeSpace.Controllers
                     return View(model);
                 }
 
-                LoginViewModel loginViewModel = new LoginViewModel
+                string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                string? tokenLink = Url.Action("ConfirmEmail", "Account", new
                 {
-                    Password = model.Password!,
-                    RememberMe = false,
-                    Username = model.Username!
-                };
+                    userid = user.Id,
+                    token = myToken
+                }, protocol: HttpContext.Request.Scheme);
 
-                var result2 = await _userHelper.LoginAsync(loginViewModel);
-
-                if (result2.Succeeded)
+                Response response = _mailHelper.SendMail(
+                    $"{model.FirstName} {model.LastName}",
+                    model.Username!,
+                    "SalesCodeSpace 2024 - Confirmação de Email",
+                    $"<h1>SalesCodeSpace 2024 - Confirmação de Email</h1>" +
+                        $"Clique no link para poder entrar como utilizador:, " +
+                        $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
+                if (response.IsSuccess)
                 {
-                    return RedirectToAction("Index", "Home");
+                    ViewBag.Message = "As instruções para poder entrar foram enviadas para o seu email.";
+                    return View(model);
                 }
+
+                ModelState.AddModelError(string.Empty, response.Message);
             }
 
             model.Countries = await _combosHelper.GetComboCountriesAsync();
@@ -259,6 +275,29 @@ namespace SalesCodeSpace.Controllers
             }
 
             return View(model);
+        }
+
+
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+            {
+                return NotFound();
+            }
+
+            User? user = await _userHelper.GetUserAsync(new Guid(userId));
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            IdentityResult result = await _userHelper.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
+            {
+                return NotFound();
+            }
+
+            return View();
         }
 
 
