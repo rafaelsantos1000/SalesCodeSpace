@@ -46,7 +46,14 @@ namespace SalesCodeSpace.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                ModelState.AddModelError(string.Empty, "Email e palavra-passe incorretos.");
+                if (result.IsLockedOut)
+                {
+                    ModelState.AddModelError(string.Empty, "Foi superado o número máximo de tentativas, a sua conta está bloqueada, tente novamente mais tarde.");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Email e palavra-passe incorretos.");
+                }
             }
 
             return View(model);
