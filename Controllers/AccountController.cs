@@ -178,7 +178,7 @@ namespace SalesCodeSpace.Controllers
 
         public async Task<IActionResult> ChangeUser()
         {
-            User? user = await _userHelper.GetUserAsync(User.Identity.Name);
+            User? user = await _userHelper.GetUserAsync(User.Identity!.Name!);
             if (user == null)
             {
                 return NotFound();
@@ -255,17 +255,17 @@ namespace SalesCodeSpace.Controllers
                     return View(model);
                 }
 
-                var user = await _userHelper.GetUserAsync(User.Identity.Name);
+                var user = await _userHelper.GetUserAsync(User.Identity!.Name!);
                 if (user != null)
                 {
-                    var result = await _userHelper.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                    var result = await _userHelper.ChangePasswordAsync(user, model.OldPassword!, model.NewPassword!);
                     if (result.Succeeded)
                     {
                         return RedirectToAction("ChangeUser");
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, result.Errors.FirstOrDefault().Description);
+                        ModelState.AddModelError(string.Empty, result.Errors.FirstOrDefault()!.Description);
                     }
                 }
                 else
@@ -300,6 +300,66 @@ namespace SalesCodeSpace.Controllers
             return View();
         }
 
+        public IActionResult RecoverPassword()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> RecoverPassword(RecoverPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                User? user = await _userHelper.GetUserAsync(model.Email!);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "O Email não corresponde ao email registado.");
+                    return View(model);
+                }
+
+                string myToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+                string? link = Url.Action(
+                    "ResetPassword",
+                    "Account",
+                    new { token = myToken }, protocol: HttpContext.Request.Scheme);
+                _mailHelper.SendMail(
+                    $"{user.FullName}",
+                    model.Email!,
+                    "SalesCodeSpace 2024 - Recuperação da Palavra-passe",
+                    $"<h1>Shopping - Recuperação da Palavra-passe</h1>" +
+                    $"Para recuperar a palavra-passe clique no link:" +
+                    $"<p><a href = \"{link}\">Reset Password</a></p>");
+                ViewBag.Message = "As instruções para recuperar a sua palavra-passe foram enviadas para o seu correio.";
+                return View();
+            }
+
+            return View(model);
+        }
+
+        public IActionResult ResetPassword(string token)
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            User? user = await _userHelper.GetUserAsync(model.UserName!);
+            if (user != null)
+            {
+                IdentityResult result = await _userHelper.ResetPasswordAsync(user, model.Token!, model.Password!);
+                if (result.Succeeded)
+                {
+                    ViewBag.Message = "Palavra-passe alterada com êxito.";
+                    return View();
+                }
+
+                ViewBag.Message = "Erro ao trocar a palavra-passe.";
+                return View(model);
+            }
+
+            ViewBag.Message = "Utilizador não encontrado.";
+            return View(model);
+        }
     }
 }
