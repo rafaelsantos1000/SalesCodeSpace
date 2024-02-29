@@ -1,0 +1,17 @@
+@model SalesCodeSpace.Data.Entities.Product
+
+@{
+    ViewData["Title"] = "Apagar";
+}
+
+<h1>Eliminar</h1>
+
+<h3>Tem a certeza que quer apagar ?</h3>
+<div>
+    <partial name="_ProductDetails" />    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Apagar" class="btn btn-outline-danger" />
+        <a asp-action="Index" class="btn btn-outline-success">Voltar</a>
+    </form>
+</div>
