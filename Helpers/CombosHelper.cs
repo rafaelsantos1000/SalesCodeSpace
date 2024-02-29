@@ -25,7 +25,7 @@ namespace SalesCodeSpace.Helpers
 
             list.Insert(0, new SelectListItem
             {
-                Text = "[Seleccione uma categoría...]",
+                Text = "[Seleccione uma categoria...]",
                 Value = "0"
             });
 

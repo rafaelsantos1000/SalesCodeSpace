@@ -177,7 +177,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            Product product = await _context!.Products
+            Product product = await _context.Products
                 .Include(p => p.ProductImages)
                 .Include(p => p.ProductCategories)
                 .ThenInclude(pc => pc.Category)
@@ -266,6 +266,75 @@ namespace SalesCodeSpace.Controllers
             return RedirectToAction(nameof(Details), new { Id = productImage.Product!.Id });
         }
 
+        public async Task<IActionResult> AddCategory(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Product? product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            AddCategoryProductViewModel model = new()
+            {
+                ProductId = product.Id,
+                Categories = await _combosHelper.GetComboCategoriesAsync(),
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCategory(AddCategoryProductViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                Product product = await _context.Products.FindAsync(model.ProductId);
+                ProductCategory productCategory = new()
+                {
+                    Category = await _context.Categories.FindAsync(model.CategoryId),
+                    Product = product,
+                };
+
+                try
+                {
+                    _context.Add(productCategory);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Details), new { Id = product.Id });
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+            }
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> DeleteCategory(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            ProductCategory? productCategory = await _context.ProductCategories
+                .Include(pc => pc.Product)
+                .FirstOrDefaultAsync(pc => pc.Id == id);
+            if (productCategory == null)
+            {
+                return NotFound();
+            }
+
+            _context.ProductCategories.Remove(productCategory);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Details), new { Id = productCategory.Product.Id });
+        }
 
     }
 }
