@@ -245,5 +245,27 @@ namespace SalesCodeSpace.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> DeleteImage(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            ProductImage? productImage = await _context.ProductImages
+                .Include(pi => pi.Product)
+                .FirstOrDefaultAsync(pi => pi.Id == id);
+            if (productImage == null)
+            {
+                return NotFound();
+            }
+
+            await _blobHelper.DeleteBlobAsync(productImage.ImageId, "products");
+            _context.ProductImages.Remove(productImage);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Details), new { Id = productImage.Product!.Id });
+        }
+
+
     }
 }
