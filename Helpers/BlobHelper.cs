@@ -21,9 +21,7 @@ namespace SalesCodeSpace.Helpers
 
         public async Task DeleteBlobAsync(Guid id, string containerName)
         {
-            //BlobContainerClient container = _blobClient.GetBlobContainerClient(containerName);
             var container = _blobClient.GetBlobContainerClient(containerName);
-            //var blockBlob = container.GetBlobClient($"{id}");
             var blockBlob = container.GetBlockBlobClient($"{id}");
             await blockBlob.DeleteIfExistsAsync();
         }

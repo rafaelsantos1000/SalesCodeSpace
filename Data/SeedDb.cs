@@ -26,6 +26,7 @@ namespace SalesCodeSpace.Data
             await CheckUserAsync("2020", "Madalena", "Santos", "madasantos@yopmail.com", "213658957", "Rua da Luz", UserType.User);
         }
 
+
         private async Task<User> CheckUserAsync
         (string document,
         string firstName,
