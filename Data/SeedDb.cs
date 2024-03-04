@@ -119,7 +119,8 @@ namespace SalesCodeSpace.Data
 
             foreach (string? image in images)
             {
-                Guid imageId = await _blobHelper.UploadBlobAsync($"{Environment.CurrentDirectory}//wwwroot//images//products//{image}", "products");
+                Guid imageId = await _blobHelper.UploadBlobAsync(Path.Combine(Environment.CurrentDirectory, "wwwroot", "images", "products", image), "products");
+                /*Guid imageId = await _blobHelper.UploadBlobAsync($"{Environment.CurrentDirectory}//wwwroot//images//products//{image}", "products");*/
                 product.ProductImages.Add(new ProductImage { ImageId = imageId });
             }
 
@@ -140,7 +141,7 @@ namespace SalesCodeSpace.Data
             if (user == null)
             {
 
-                Guid imageId = await _blobHelper.UploadBlobAsync($"{Environment.CurrentDirectory}//wwwroot//images//users//{image}", "users");
+                Guid imageId = await _blobHelper.UploadBlobAsync(Path.Combine(Environment.CurrentDirectory, "wwwroot", "images", "users", image), "users");
 
                 user = new User
                 {
