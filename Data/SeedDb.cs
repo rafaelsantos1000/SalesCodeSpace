@@ -21,7 +21,7 @@ namespace SalesCodeSpace.Data
 
         public async Task SeedAsync()
         {
-            await _context.Database.EnsureCreatedAsync();
+            await _context.Database.MigrateAsync();
             await CheckCountriesAsync();
             await CheckCategoriesAsync();
             await CheckRolesAsync();
