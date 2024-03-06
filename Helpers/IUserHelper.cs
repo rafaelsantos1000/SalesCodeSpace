@@ -10,6 +10,8 @@ namespace SalesCodeSpace.Helpers
 
         Task<User?> GetUserAsync(Guid userId);
 
+        Task<User?> GetUserAsync(int id);
+
         Task<IdentityResult> AddUserAsync(User user, string password);
 
         Task<User> AddUserAsync(AddUserViewModel model);

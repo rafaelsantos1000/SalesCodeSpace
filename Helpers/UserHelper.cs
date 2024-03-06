@@ -91,6 +91,16 @@ namespace SalesCodeSpace.Helpers
                 .FirstOrDefaultAsync(u => u.Id == userId.ToString());
         }
 
+        public async Task<User?> GetUserAsync(int id)
+        {
+            return await _context.Users
+                .Include(u => u.City)
+                .ThenInclude(c => c!.State)
+                .ThenInclude(s => s!.Country)
+                .FirstOrDefaultAsync(u => u.Document == id.ToString());
+
+        }
+
         public async Task<bool> IsUserInRoleAsync(User user, string roleName)
         {
             return await _userManager.IsInRoleAsync(user, roleName);

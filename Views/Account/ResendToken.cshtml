@@ -1,0 +1,29 @@
+@model SalesCodeSpace.Models.ResendTokenViewModel
+
+@{
+    ViewData["Title"] = "Reenvio do Email de confirmação";
+}
+
+<flash dismissable="true" />
+
+<div class="container">
+    <div class="card">
+        <h5 class="card-header"><i class="fa-solid fa-at text-navy"></i> Reenvio do Email de confirmação a @Html.DisplayFor(model => model.FirstName) @Html.DisplayFor(model => model.LastName) </h5>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <form method="post">
+                        <div class="form-group">
+                            <label asp-for="Username"></label>
+                            <input asp-for="Username" class="form-control" readonly />
+                        </div>
+                        <div class="form-group mt-2">
+                            <button type="submit" class="btn btn-outline-primary"><i class="fa-solid fa-envelope"></i> Reenviar email de confirmação</button>
+                            <a asp-controller="Users" asp-action="Index" class="btn btn-outline-success">Voltar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

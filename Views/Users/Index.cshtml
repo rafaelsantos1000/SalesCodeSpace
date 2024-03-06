@@ -114,7 +114,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#MyTable').DataTable({
+            var table = $('#MyTable').DataTable({
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Portuguese.json"
                 },
@@ -122,6 +122,18 @@
                     [25, 50, 100, 200, -1],
                     [25, 50, 100, 200, "Todos"]
                 ]
+            });
+
+            // Adicionar um evento de clique nas linhas da tabela
+            $('#MyTable tbody').on('click', 'tr', function () {
+                // Obter os dados da linha selecionada
+                var data = table.row(this).data();
+                //debugger;
+                // Verificar se há dados
+                if (data) {
+                    // Redirecionar para a action Details passando o ID do user
+                    window.location.href = '/Account/ResendToken/' + parseInt(data[0]); 
+                }
             });
         });
     </script>

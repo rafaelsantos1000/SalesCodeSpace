@@ -7,6 +7,7 @@ using SalesCodeSpace.Enums;
 using SalesCodeSpace.Helpers;
 using SalesCodeSpace.Models;
 using SalesCodeSpace.Responses;
+using Vereyon.Web;
 
 namespace SalesCodeSpace.Controllers
 {
@@ -17,14 +18,16 @@ namespace SalesCodeSpace.Controllers
         private readonly ICombosHelper _combosHelper;
         private readonly IBlobHelper _blobHelper;
         private readonly IMailHelper _mailHelper;
+        private readonly IFlashMessage _flashMessage;
 
-        public AccountController(IUserHelper userHelper, DataContext context, ICombosHelper combosHelper, IBlobHelper blobHelper, IMailHelper mailHelper)
+        public AccountController(IUserHelper userHelper, DataContext context, ICombosHelper combosHelper, IBlobHelper blobHelper, IMailHelper mailHelper, IFlashMessage flashMessage)
         {
             _userHelper = userHelper;
             _context = context;
             _combosHelper = combosHelper;
             _blobHelper = blobHelper;
             _mailHelper = mailHelper;
+            _flashMessage = flashMessage;
         }
 
 
@@ -120,7 +123,7 @@ namespace SalesCodeSpace.Controllers
                 }
 
                 string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
-                string? tokenLink = Url.Action("ConfirmEmail", "Account", new
+                string tokenLink = Url.Action("ConfirmEmail", "Account", new
                 {
                     userid = user.Id,
                     token = myToken
@@ -128,7 +131,7 @@ namespace SalesCodeSpace.Controllers
 
                 Response response = _mailHelper.SendMail(
                     $"{model.FirstName} {model.LastName}",
-                    model.Username!,
+                    model.Username,
                     "SalesCodeSpace 2024 - Confirmação de Email",
                     $"<h1>SalesCodeSpace 2024 - Confirmação de Email</h1>" +
                         $"Clique no link para poder entrar como utilizador:, " +
@@ -151,7 +154,7 @@ namespace SalesCodeSpace.Controllers
 
         public JsonResult GetStates(int countryId)
         {
-            Country? country = _context.Countries
+            Country country = _context.Countries
                 .Include(c => c.States)
                 .FirstOrDefault(c => c.Id == countryId);
             if (country == null)
@@ -164,7 +167,7 @@ namespace SalesCodeSpace.Controllers
 
         public JsonResult GetCities(int stateId)
         {
-            State? state = _context.States
+            State state = _context.States
                 .Include(s => s.Cities)
                 .FirstOrDefault(s => s.Id == stateId);
             if (state == null)
@@ -172,13 +175,13 @@ namespace SalesCodeSpace.Controllers
                 return null!;
             }
 
-            return Json(state.Cities!.OrderBy(c => c.Name));
+            return Json(state.Cities.OrderBy(c => c.Name));
         }
 
 
         public async Task<IActionResult> ChangeUser()
         {
-            User? user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+            User user = await _userHelper.GetUserAsync(User.Identity.Name);
             if (user == null)
             {
                 return NotFound();
@@ -217,7 +220,7 @@ namespace SalesCodeSpace.Controllers
                     imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "users");
                 }
 
-                User? user = await _userHelper.GetUserAsync(User.Identity!.Name!);
+                User user = await _userHelper.GetUserAsync(User.Identity.Name);
 
                 user!.FirstName = model.FirstName;
                 user.LastName = model.LastName;
@@ -285,7 +288,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            User? user = await _userHelper.GetUserAsync(new Guid(userId));
+            User user = await _userHelper.GetUserAsync(new Guid(userId));
             if (user == null)
             {
                 return NotFound();
@@ -310,7 +313,7 @@ namespace SalesCodeSpace.Controllers
         {
             if (ModelState.IsValid)
             {
-                User? user = await _userHelper.GetUserAsync(model.Email!);
+                User user = await _userHelper.GetUserAsync(model.Email!);
                 if (user == null)
                 {
                     ModelState.AddModelError(string.Empty, "O Email não corresponde ao email registado.");
@@ -318,7 +321,7 @@ namespace SalesCodeSpace.Controllers
                 }
 
                 string myToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
-                string? link = Url.Action(
+                string link = Url.Action(
                     "ResetPassword",
                     "Account",
                     new { token = myToken }, protocol: HttpContext.Request.Scheme);
@@ -344,7 +347,7 @@ namespace SalesCodeSpace.Controllers
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
-            User? user = await _userHelper.GetUserAsync(model.UserName!);
+            User user = await _userHelper.GetUserAsync(model.UserName!);
             if (user != null)
             {
                 IdentityResult result = await _userHelper.ResetPasswordAsync(user, model.Token!, model.Password!);
@@ -361,5 +364,71 @@ namespace SalesCodeSpace.Controllers
             ViewBag.Message = "Utilizador não encontrado.";
             return View(model);
         }
+
+        // GET: User/Details/5
+        public async Task<IActionResult> ResendToken(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            User user = await _userHelper.GetUserAsync(id.Value);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            ResendTokenViewModel model = new()
+            {
+                Username = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+            };
+
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendToken(ResendTokenViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = await _userHelper.GetUserAsync(model.Username!);
+                if (!user.EmailConfirmed)
+                {
+                    string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user!);
+                    string tokenLink = Url.Action("ConfirmEmail", "Account", new
+                    {
+                        userid = user!.Id,
+                        token = myToken
+                    }, protocol: HttpContext.Request.Scheme);
+
+                    Response response = _mailHelper.SendMail(
+                        $"{model.FirstName} {model.LastName}",
+                        model.Username!,
+                        "SalesCodeSpace 2024 - Confirmação de Email",
+                        $"<h1>SalesCodeSpace 2024 - Confirmação de Email</h1>" +
+                            $"Para entrar como utilizador por favor clique no seguinte link:, " +
+                            $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
+                    if (response.IsSuccess)
+                    {
+                        _flashMessage.Info("Email reenviado!");
+                    }
+                    else
+                    {
+                        _flashMessage.Danger(response.Message);
+                    }
+                }
+                else
+                {
+                    _flashMessage.Warning("Email não foi enviando porque este utilizador já tinha confirmado.");
+                }
+            }
+            return View(model);
+        }
+
     }
 }

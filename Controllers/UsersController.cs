@@ -129,5 +129,6 @@ namespace SalesCodeSpace.Controllers
 
             return Json(state.Cities!.OrderBy(d => d.Name));
         }
+
     }
 }
