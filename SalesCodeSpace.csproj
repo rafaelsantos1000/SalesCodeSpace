@@ -21,4 +21,12 @@
     <PackageReference Include="Vereyon.Web.FlashMessage" Version="3.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views/Home/Details.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views/Home/Details.cshtml" />
+  </ItemGroup>
+
 </Project>
