@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SalesCodeSpace.Data.Entities;
 using SalesCodeSpace.Data;
 
 namespace SalesCodeSpace.Helpers
@@ -22,6 +23,36 @@ namespace SalesCodeSpace.Helpers
             })
                 .OrderBy(c => c.Text)
                 .ToListAsync();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = "[Seleccione uma categoria...]",
+                Value = "0"
+            });
+
+            return list;
+        }
+
+        public async Task<IEnumerable<SelectListItem>> GetComboCategoriesAsync(IEnumerable<Category> filter)
+        {
+            List<Category> categories = await _context.Categories.ToListAsync();
+            List<Category> categoriesFiltered = new();
+
+            foreach (Category category in categories)
+            {
+                if (!filter.Any(c => c.Id == category.Id))
+                {
+                    categoriesFiltered.Add(category);
+                }
+            }
+
+            List<SelectListItem> list = categoriesFiltered.Select(c => new SelectListItem
+            {
+                Text = c.Name,
+                Value = c.Id.ToString()
+            })
+                .OrderBy(c => c.Text)
+                .ToList();
 
             list.Insert(0, new SelectListItem
             {
@@ -71,6 +102,8 @@ namespace SalesCodeSpace.Helpers
 
             return list;
         }
+
+
 
         public async Task<IEnumerable<SelectListItem>> GetComboStatesAsync(int countryId)
         {

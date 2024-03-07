@@ -273,16 +273,25 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            Product? product = await _context.Products.FindAsync(id);
+            Product product = await _context.Products
+                .Include(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (product == null)
             {
                 return NotFound();
             }
 
+            List<Category> categories = product.ProductCategories.Select(pc => new Category
+            {
+                Id = pc.Category.Id,
+                Name = pc.Category.Name,
+            }).ToList();
+
             AddCategoryProductViewModel model = new()
             {
                 ProductId = product.Id,
-                Categories = await _combosHelper.GetComboCategoriesAsync(),
+                Categories = await _combosHelper.GetComboCategoriesAsync(categories),
             };
 
             return View(model);
@@ -292,9 +301,15 @@ namespace SalesCodeSpace.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddCategory(AddCategoryProductViewModel model)
         {
+
+            Product product = await _context.Products
+                    .Include(p => p.ProductCategories)
+                    .ThenInclude(pc => pc.Category)
+                    .FirstOrDefaultAsync(p => p.Id == model.ProductId);
+
             if (ModelState.IsValid)
             {
-                Product product = await _context.Products.FindAsync(model.ProductId);
+
                 ProductCategory productCategory = new()
                 {
                     Category = await _context.Categories.FindAsync(model.CategoryId),
@@ -313,6 +328,13 @@ namespace SalesCodeSpace.Controllers
                 }
             }
 
+            List<Category> categories = product.ProductCategories.Select(pc => new Category
+            {
+                Id = pc.Category.Id,
+                Name = pc.Category.Name,
+            }).ToList();
+
+            model.Categories = await _combosHelper.GetComboCategoriesAsync(categories);
             return View(model);
         }
 
