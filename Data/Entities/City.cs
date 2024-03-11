@@ -10,11 +10,11 @@ namespace SalesCodeSpace.Data.Entities
         [Display(Name = "Cidade")]
         [MaxLength(50, ErrorMessage = "O campo {0} deve ter no máximo {1} caractéres.")]
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
         [JsonIgnore]
-        public State? State { get; set; }
+        public State State { get; set; }
 
-        public ICollection<User>? Users { get; set; }
+        public ICollection<User> Users { get; set; }
     }
 }

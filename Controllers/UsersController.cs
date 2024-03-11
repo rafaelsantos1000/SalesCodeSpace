@@ -78,7 +78,7 @@ namespace SalesCodeSpace.Controllers
                 }
 
                 string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
-                string? tokenLink = Url.Action("ConfirmEmail", "Account", new
+                string tokenLink = Url.Action("ConfirmEmail", "Account", new
                 {
                     userid = user.Id,
                     token = myToken
@@ -109,7 +109,7 @@ namespace SalesCodeSpace.Controllers
 
         public JsonResult GetStates(int countryId)
         {
-            Country? country = _context.Countries
+            Country country = _context.Countries
                 .Include(c => c.States)
                 .FirstOrDefault(c => c.Id == countryId);
 
@@ -121,7 +121,7 @@ namespace SalesCodeSpace.Controllers
 
         public JsonResult GetCities(int stateId)
         {
-            State? state = _context.States
+            State state = _context.States
                 .Include(s => s.Cities)
                 .FirstOrDefault(s => s.Id == stateId);
 

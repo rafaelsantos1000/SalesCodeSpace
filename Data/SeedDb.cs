@@ -117,7 +117,7 @@ namespace SalesCodeSpace.Data
             }
 
 
-            foreach (string? image in images)
+            foreach (string image in images)
             {
                 Guid imageId = await _blobHelper.UploadBlobAsync(Path.Combine(Environment.CurrentDirectory, "wwwroot", "images", "products", image), "products");
                 /*Guid imageId = await _blobHelper.UploadBlobAsync($"{Environment.CurrentDirectory}//wwwroot//images//products//{image}", "products");*/
@@ -137,7 +137,7 @@ namespace SalesCodeSpace.Data
         string image,
         UserType userType)
         {
-            User? user = await _userHelper.GetUserAsync(email);
+            User user = await _userHelper.GetUserAsync(email);
             if (user == null)
             {
 

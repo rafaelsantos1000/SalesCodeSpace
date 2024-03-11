@@ -7,6 +7,6 @@ namespace SalesCodeSpace.Models
         [Display(Name ="Email")]
         [Required(ErrorMessage ="O campo {0} é obrigatório.")]
         [EmailAddress(ErrorMessage ="Deve inserir um email válido.")]
-        public string? Email { get; set; }
+        public string Email { get; set; }
     }
 }

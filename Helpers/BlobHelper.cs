@@ -9,10 +9,10 @@ namespace SalesCodeSpace.Helpers
 
         public BlobHelper(IConfiguration configuration)
         {
-            string? keys = configuration["Blob:ConnectionString"];
+            string keys = configuration["Blob:ConnectionString"];
             if (keys?.Contains("${STORAGE_ACCOUNT}") == true)
             {
-                string? storageAccount = Environment.GetEnvironmentVariable("STORAGE_ACCOUNT");
+                string storageAccount = Environment.GetEnvironmentVariable("STORAGE_ACCOUNT");
                 keys = keys.Replace("${STORAGE_ACCOUNT}", storageAccount);
             }
 

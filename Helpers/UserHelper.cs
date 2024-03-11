@@ -50,7 +50,7 @@ namespace SalesCodeSpace.Helpers
                 return null!;
             }
 
-            User? newUser = await GetUserAsync(model!.Username!);
+            User newUser = await GetUserAsync(model!.Username!);
             await AddUserToRoleAsync(newUser!, user.UserType.ToString());
             return newUser!;
         }
@@ -73,7 +73,7 @@ namespace SalesCodeSpace.Helpers
             }
         }
 
-        public async Task<User?> GetUserAsync(string email)
+        public async Task<User> GetUserAsync(string email)
         {
             return await _context.Users
                 .Include(u => u.City)
@@ -82,7 +82,7 @@ namespace SalesCodeSpace.Helpers
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public async Task<User?> GetUserAsync(Guid userId)
+        public async Task<User> GetUserAsync(Guid userId)
         {
             return await _context.Users
                 .Include(u => u.City)
@@ -91,7 +91,7 @@ namespace SalesCodeSpace.Helpers
                 .FirstOrDefaultAsync(u => u.Id == userId.ToString());
         }
 
-        public async Task<User?> GetUserAsync(int id)
+        public async Task<User> GetUserAsync(int id)
         {
             return await _context.Users
                 .Include(u => u.City)

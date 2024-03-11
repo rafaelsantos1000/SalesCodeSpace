@@ -187,7 +187,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            Country? country = await _context.Countries.FindAsync(id);
+            Country country = await _context.Countries.FindAsync(id);
             if (country == null)
             {
                 return NotFound();
@@ -248,7 +248,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            State? state = await _context.States
+            State state = await _context.States
                 .Include(s => s.Country)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (state == null)
@@ -318,7 +318,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            State? state = await _context.States
+            State state = await _context.States
                 .Include(s => s.Country)
                 .Include(s => s.Cities)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -336,7 +336,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            State? state = await _context.States.FindAsync(id);
+            State state = await _context.States.FindAsync(id);
             if (state == null)
             {
                 return NotFound();
@@ -396,7 +396,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            City? city = await _context.Cities
+            City city = await _context.Cities
                 .Include(c => c.State)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -482,7 +482,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            State? state = await _context.States
+            State state = await _context.States
                 .Include(s => s.Country)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (state == null)
@@ -498,7 +498,7 @@ namespace SalesCodeSpace.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteStateConfirmed(int id)
         {
-            State? state = await _context.States
+            State state = await _context.States
                 .Include(s => s.Country)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
@@ -519,7 +519,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            City? city = await _context.Cities
+            City city = await _context.Cities
                 .Include(c => c.State)
                 .FirstOrDefaultAsync(c => c.Id == id);
             if (city == null)
@@ -535,7 +535,7 @@ namespace SalesCodeSpace.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCityConfirmed(int id)
         {
-            City? city = await _context.Cities
+            City city = await _context.Cities
                 .Include(c => c.State)
                 .FirstOrDefaultAsync(c => c.Id == id);
 

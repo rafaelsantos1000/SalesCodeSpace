@@ -10,12 +10,12 @@ namespace SalesCodeSpace.Data.Entities
         [Display(Name = "Nome")]
         [MaxLength(50, ErrorMessage = "O campo {0} deve ter no máximo {1} carateres.")]
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
         [DataType(DataType.MultilineText)]
         [Display(Name = "Descrição")]
         [MaxLength(500, ErrorMessage = "O campo {0} deve ter no máximo {1} carateres.")]
-        public string? Description { get; set; }
+        public string Description { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         [DisplayFormat(DataFormatString = "{0:C2}")]
@@ -28,12 +28,12 @@ namespace SalesCodeSpace.Data.Entities
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         public float Stock { get; set; }
 
-        public ICollection<ProductCategory>? ProductCategories { get; set; }
+        public ICollection<ProductCategory> ProductCategories { get; set; }
 
         [Display(Name = "Categorias")]
         public int CategoriesNumber => ProductCategories == null ? 0 : ProductCategories.Count;
 
-        public ICollection<ProductImage>? ProductImages { get; set; }
+        public ICollection<ProductImage> ProductImages { get; set; }
 
         [Display(Name = "Fotos")]
         public int ImagesNumber => ProductImages == null ? 0 : ProductImages.Count;

@@ -18,27 +18,27 @@ namespace SalesCodeSpace.Helpers
         {
             try
             {
-                string? from = _configuration["Mail:From"];
+                string from = _configuration["Mail:From"];
                 if (from?.Contains("${EMAIL_FROM}") == true)
                 {
-                    string? keys = Environment.GetEnvironmentVariable("EMAIL_FROM");
+                    string keys = Environment.GetEnvironmentVariable("EMAIL_FROM");
                     from = from.Replace("${EMAIL_FROM}", keys);
                 }
 
-                string? name = _configuration["Mail:Name"];
-                string? smtp = _configuration["Mail:Smtp"];
+                string name = _configuration["Mail:Name"];
+                string smtp = _configuration["Mail:Smtp"];
 
-                string? port = _configuration["Mail:Port"];
+                string port = _configuration["Mail:Port"];
                 if (port?.Contains("${EMAIL_PORT}") == true)
                 {
-                    string? keys = Environment.GetEnvironmentVariable("EMAIL_PORT");
+                    string keys = Environment.GetEnvironmentVariable("EMAIL_PORT");
                     port = port.Replace("${EMAIL_PORT}", keys);
                 }
 
-                string? password = _configuration["Mail:Password"];
+                string password = _configuration["Mail:Password"];
                 if (password?.Contains("${EMAIL_PASSWORD}") == true)
                 {
-                    string? keys = Environment.GetEnvironmentVariable("EMAIL_PASSWORD");
+                    string keys = Environment.GetEnvironmentVariable("EMAIL_PASSWORD");
                     password = password.Replace("${EMAIL_PASSWORD}", keys);
                 }
 

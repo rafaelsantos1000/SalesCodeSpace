@@ -112,7 +112,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            Product? product = await _context.Products.FindAsync(id);
+            Product product = await _context.Products.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -142,7 +142,7 @@ namespace SalesCodeSpace.Controllers
 
             try
             {
-                Product? product = await _context.Products.FindAsync(model.Id);
+                Product product = await _context.Products.FindAsync(model.Id);
                 product!.Description = model.Description;
                 product.Name = model.Name;
                 product.Price = model.Price;
@@ -197,7 +197,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            Product? product = await _context.Products.FindAsync(id);
+            Product product = await _context.Products.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -252,7 +252,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            ProductImage? productImage = await _context.ProductImages
+            ProductImage productImage = await _context.ProductImages
                 .Include(pi => pi.Product)
                 .FirstOrDefaultAsync(pi => pi.Id == id);
             if (productImage == null)
@@ -345,7 +345,7 @@ namespace SalesCodeSpace.Controllers
                 return NotFound();
             }
 
-            ProductCategory? productCategory = await _context.ProductCategories
+            ProductCategory productCategory = await _context.ProductCategories
                 .Include(pc => pc.Product)
                 .FirstOrDefaultAsync(pc => pc.Id == id);
             if (productCategory == null)
@@ -381,7 +381,7 @@ namespace SalesCodeSpace.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            Product? product = await _context.Products
+            Product product = await _context.Products
                 .Include(p => p.ProductImages)
                 .FirstOrDefaultAsync(p => p.Id == id);
 

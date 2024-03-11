@@ -9,22 +9,22 @@ namespace SalesCodeSpace.Data.Entities
         [Display(Name = "Documento")]
         [MaxLength(20, ErrorMessage = "O campo {0} deve ter no máximo {1} carateres.")]
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
-        public string? Document { get; set; }
+        public string Document { get; set; }
 
         [Display(Name = "Nomes")]
         [MaxLength(50, ErrorMessage = "O campo {0} deve ter no máximo {1} carateres.")]
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
-        public string? FirstName { get; set; }
+        public string FirstName { get; set; }
 
         [Display(Name = "Apelidos")]
         [MaxLength(50, ErrorMessage = "O campo {0} deve ter no máximo {1} carateres.")]
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
-        public string? LastName { get; set; }
+        public string LastName { get; set; }
 
         [Display(Name = "Morada")]
         [MaxLength(200, ErrorMessage = "O campo {0} deve ter no máximo {1} carateres.")]
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
-        public string? Address { get; set; }
+        public string Address { get; set; }
 
         [Display(Name = "Foto")]
         public Guid ImageId { get; set; }
@@ -39,7 +39,7 @@ namespace SalesCodeSpace.Data.Entities
         public UserType UserType { get; set; }
 
         [Display(Name = "Cidade")]
-        public City? City { get; set; }
+        public City City { get; set; }
 
         [Display(Name = "Utilizador")]
         public string FullName => $"{FirstName} {LastName}";

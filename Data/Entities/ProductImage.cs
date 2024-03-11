@@ -7,7 +7,7 @@ namespace SalesCodeSpace.Data.Entities
         public int Id { get; set; }
 
 
-        public Product? Product { get; set; }
+        public Product Product { get; set; }
 
 
         [Display(Name = "Foto")]
