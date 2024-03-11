@@ -15,9 +15,13 @@ namespace SalesCodeSpace.Data.Entities
         [Required(ErrorMessage = "O campo {0} é obrigatório.")]
         public float Quantity { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:C2}")]
+        [Display(Name = "Valor")]
+        public decimal Value => Product == null ? 0 : (decimal)Quantity * Product.Price;
+
         [DataType(DataType.MultilineText)]
         [Display(Name = "Comentários")]
         public string Remarks { get; set; }
-    }
 
+    }
 }
