@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using SalesCodeSpace.Data.Entities;
 
-namespace SalesCodeSpace;
+namespace SalesCodeSpace.Data.Entities;
 
 public class SaleDetail
 {

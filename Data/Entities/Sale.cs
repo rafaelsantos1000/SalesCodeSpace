@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using SalesCodeSpace.Data.Entities;
 
-namespace SalesCodeSpace;
+namespace SalesCodeSpace.Data.Entities;
 
 public class Sale
 {
@@ -18,16 +18,17 @@ public class Sale
     [Display(Name = "Comentários")]
     public string Remarks { get; set; }
 
+    [Display(Name = "Estado da encomenda")]
     public OrderStatus OrderStatus { get; set; }
 
     public ICollection<SaleDetail> SaleDetails { get; set; }
 
     [DisplayFormat(DataFormatString = "{0:N0}")]
-    [Display(Name = "Líneas")]
+    [Display(Name = "Linhas")]
     public int Lines => SaleDetails == null ? 0 : SaleDetails.Count;
 
     [DisplayFormat(DataFormatString = "{0:N2}")]
-    [Display(Name = "Cantidad")]
+    [Display(Name = "Quantidade")]
     public float Quantity => SaleDetails == null ? 0 : SaleDetails.Sum(sd => sd.Quantity);
 
     [DisplayFormat(DataFormatString = "{0:C2}")]
