@@ -41,6 +41,8 @@ namespace SalesCodeSpace.Data.Entities
         [Display(Name = "Cidade")]
         public City City { get; set; }
 
+        public ICollection<Sale> Sales { get; set; }
+
         [Display(Name = "Utilizador")]
         public string FullName => $"{FirstName} {LastName}";
 

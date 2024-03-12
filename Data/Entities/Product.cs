@@ -35,6 +35,8 @@ namespace SalesCodeSpace.Data.Entities
 
         public ICollection<ProductImage> ProductImages { get; set; }
 
+        public ICollection<SaleDetail> SaleDetails { get; set; }
+
         [Display(Name = "Fotos")]
         public int ImagesNumber => ProductImages == null ? 0 : ProductImages.Count;
 

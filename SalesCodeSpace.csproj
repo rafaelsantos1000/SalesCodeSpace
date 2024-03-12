@@ -27,6 +27,11 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Views/Home/Details.cshtml" />
+    <_ContentIncludedByDefault Remove="Views/Home/OrderSuccess.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views/Home/OrderSuccess.cshtml" />
   </ItemGroup>
 
 </Project>

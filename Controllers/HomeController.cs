@@ -6,6 +6,7 @@ using SalesCodeSpace.Data;
 using SalesCodeSpace.Data.Entities;
 using SalesCodeSpace.Helpers;
 using SalesCodeSpace.Models;
+using SalesCodeSpace.Responses;
 
 namespace SalesCodeSpace.Controllers;
 
@@ -14,12 +15,14 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly DataContext _context;
     private readonly IUserHelper _userHelper;
+    private readonly IOrdersHelper _ordersHelper;
 
-    public HomeController(ILogger<HomeController> logger, DataContext context, IUserHelper userHelper)
+    public HomeController(ILogger<HomeController> logger, DataContext context, IUserHelper userHelper, IOrdersHelper ordersHelper)
     {
         _logger = logger;
         _context = context;
         _userHelper = userHelper;
+        _ordersHelper = ordersHelper;
     }
 
     public async Task<IActionResult> Index()
@@ -27,6 +30,7 @@ public class HomeController : Controller
         List<Product> products = await _context.Products
             .Include(p => p.ProductImages)
             .Include(p => p.ProductCategories)
+            .Where(p => p.Stock > 0)
             .OrderBy(p => p.Description)
             .ToListAsync();
 
@@ -292,6 +296,40 @@ public class HomeController : Controller
             return RedirectToAction(nameof(ShowCart));
         }
 
+        return View(model);
+    }
+
+    [Authorize]
+    public IActionResult OrderSuccess()
+    {
+        return View();
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ShowCart(ShowCartViewModel model)
+    {
+        User user = await _userHelper.GetUserAsync(User.Identity.Name);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        model.User = user;
+        model.TemporalSales = await _context.TemporalSales
+            .Include(ts => ts.Product)
+            .ThenInclude(p => p.ProductImages)
+            .Where(ts => ts.User.Id == user.Id)
+            .ToListAsync();
+
+        Response response = await _ordersHelper.ProcessOrderAsync(model);
+        if (response.IsSuccess)
+        {
+            return RedirectToAction(nameof(OrderSuccess));
+        }
+
+        ModelState.AddModelError(string.Empty, response.Message);
         return View(model);
     }
 
