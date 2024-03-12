@@ -1,4 +1,5 @@
-﻿using SalesCodeSpace.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SalesCodeSpace.Data;
 using SalesCodeSpace.Data.Entities;
 using SalesCodeSpace.Responses;
 
@@ -76,4 +77,26 @@ public class OrdersHelper : IOrdersHelper
         }
         return response;
     }
+
+    public async Task<Response> CancelOrderAsync(int id)
+    {
+        Sale sale = await _context.Sales
+            .Include(s => s.SaleDetails)
+            .ThenInclude(sd => sd.Product)
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+        foreach (SaleDetail saleDetail in sale.SaleDetails)
+        {
+            Product product = await _context.Products.FindAsync(saleDetail.Product.Id);
+            if (product != null)
+            {
+                product.Stock += saleDetail.Quantity;
+            }
+        }
+
+        sale.OrderStatus = OrderStatus.Canceled;
+        await _context.SaveChangesAsync();
+        return new Response { IsSuccess = true };
+    }
+
 }
