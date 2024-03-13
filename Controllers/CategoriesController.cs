@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SalesCodeSpace.Data;
 using SalesCodeSpace.Data.Entities;
+using Vereyon.Web;
 
 namespace SalesCodeSpace.Controllers
 {
@@ -11,10 +12,12 @@ namespace SalesCodeSpace.Controllers
     public class CategoriesController : Controller
     {
         private readonly DataContext _context;
+        private readonly IFlashMessage _flashMessage;
 
-        public CategoriesController(DataContext context)
+        public CategoriesController(DataContext context, IFlashMessage flashMessage)
         {
             _context = context;
+            _flashMessage = flashMessage;
         }
 
         // GET: Categories
@@ -66,16 +69,16 @@ namespace SalesCodeSpace.Controllers
                 {
                     if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                     {
-                        ModelState.AddModelError(string.Empty, "Já existe uma categoría com o mesmo nome.");
+                        _flashMessage.Danger("Já existe uma categoría com o mesmo nome.");
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                        _flashMessage.Danger(dbUpdateException.InnerException.Message);
                     }
                 }
                 catch (Exception exception)
                 {
-                    ModelState.AddModelError(string.Empty, exception.Message);
+                    _flashMessage.Danger(exception.Message);
                 }
             }
             return View(category);
@@ -121,16 +124,16 @@ namespace SalesCodeSpace.Controllers
                 {
                     if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                     {
-                        ModelState.AddModelError(string.Empty, "Já existe uma categoría com o mesmo nome.");
+                        _flashMessage.Danger("Já existe uma categoría com o mesmo nome.");
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                        _flashMessage.Danger(dbUpdateException.InnerException.Message);
                     }
                 }
                 catch (Exception exception)
                 {
-                    ModelState.AddModelError(string.Empty, exception.Message);
+                    _flashMessage.Danger(exception.Message);
                 }
             }
             return View(category);

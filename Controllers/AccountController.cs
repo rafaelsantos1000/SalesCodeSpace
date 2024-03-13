@@ -55,15 +55,15 @@ namespace SalesCodeSpace.Controllers
 
                 if (result.IsLockedOut)
                 {
-                    ModelState.AddModelError(string.Empty, "Foi superado o número máximo de tentativas, a sua conta está bloqueada, tente novamente mais tarde.");
+                    _flashMessage.Danger("Foi superado o número máximo de tentativas, a sua conta está bloqueada, tente novamente mais tarde.");
                 }
                 else if (result.IsNotAllowed)
                 {
-                    ModelState.AddModelError(string.Empty, "O utilizador ainda não foi confirmado, deve seguir as instruções enviadas para o email.");
+                    _flashMessage.Danger("O utilizador ainda não foi confirmado, deve seguir as instruções enviadas para o email.");
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Email e palavra-passe incorretos.");
+                    _flashMessage.Danger("Email e palavra-passe incorretos.");
                 }
             }
 
@@ -115,7 +115,7 @@ namespace SalesCodeSpace.Controllers
                 User user = await _userHelper.AddUserAsync(model);
                 if (user == null)
                 {
-                    ModelState.AddModelError(string.Empty, "Este email já está a ser usado.");
+                    _flashMessage.Danger("Este email já está a ser usado.");
                     model.Countries = await _combosHelper.GetComboCountriesAsync();
                     model.States = await _combosHelper.GetComboStatesAsync(model.CountryId);
                     model.Cities = await _combosHelper.GetComboCitiesAsync(model.StateId);
@@ -138,11 +138,12 @@ namespace SalesCodeSpace.Controllers
                         $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
                 if (response.IsSuccess)
                 {
-                    ViewBag.Message = "As instruções para poder entrar foram enviadas para o seu email.";
-                    return View(model);
+                    _flashMessage.Info("As instruções para poder entrar foram enviadas para o seu email.");
+                    return RedirectToAction(nameof(Login));
+
                 }
 
-                ModelState.AddModelError(string.Empty, response.Message);
+                _flashMessage.Danger(response.Message);
             }
 
             model.Countries = await _combosHelper.GetComboCountriesAsync();
@@ -254,7 +255,7 @@ namespace SalesCodeSpace.Controllers
             {
                 if (model.OldPassword == model.NewPassword)
                 {
-                    ModelState.AddModelError(string.Empty, "Deve inserir uma palavra-passe diferente.");
+                    _flashMessage.Danger("Deve inserir uma palavra-passe diferente.");
                     return View(model);
                 }
 
@@ -268,12 +269,12 @@ namespace SalesCodeSpace.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, result.Errors.FirstOrDefault()!.Description);
+                        _flashMessage.Danger(result.Errors.FirstOrDefault()!.Description);
                     }
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Utilizador não encontrado.");
+                    _flashMessage.Danger("Utilizador não encontrado.");
                 }
             }
 
@@ -316,7 +317,7 @@ namespace SalesCodeSpace.Controllers
                 User user = await _userHelper.GetUserAsync(model.Email!);
                 if (user == null)
                 {
-                    ModelState.AddModelError(string.Empty, "O Email não corresponde ao email registado.");
+                    _flashMessage.Danger("O Email não corresponde ao email registado.");
                     return View(model);
                 }
 
@@ -332,8 +333,8 @@ namespace SalesCodeSpace.Controllers
                     $"<h1>Shopping - Recuperação da Palavra-passe</h1>" +
                     $"Para recuperar a palavra-passe clique no link:" +
                     $"<p><a href = \"{link}\">Reset Password</a></p>");
-                ViewBag.Message = "As instruções para recuperar a sua palavra-passe foram enviadas para o seu correio.";
-                return View();
+                _flashMessage.Info("As instruções para recuperar a sua palavra-passe foram enviadas para o seu correio.");
+                return RedirectToAction(nameof(Login));
             }
 
             return View(model);
@@ -353,15 +354,14 @@ namespace SalesCodeSpace.Controllers
                 IdentityResult result = await _userHelper.ResetPasswordAsync(user, model.Token!, model.Password!);
                 if (result.Succeeded)
                 {
-                    ViewBag.Message = "Palavra-passe alterada com êxito.";
-                    return View();
+                    _flashMessage.Info("Palavra-passe alterada com êxito.");
+                    return RedirectToAction(nameof(Login));
                 }
 
-                ViewBag.Message = "Erro ao trocar a palavra-passe.";
+                _flashMessage.Danger("Erro ao trocar a palavra-passe.");
                 return View(model);
             }
-
-            ViewBag.Message = "Utilizador não encontrado.";
+            _flashMessage.Danger("Utilizador não foi encontrado.");
             return View(model);
         }
 

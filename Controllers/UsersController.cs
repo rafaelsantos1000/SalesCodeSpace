@@ -7,6 +7,7 @@ using SalesCodeSpace.Enums;
 using SalesCodeSpace.Helpers;
 using SalesCodeSpace.Models;
 using SalesCodeSpace.Responses;
+using Vereyon.Web;
 
 namespace SalesCodeSpace.Controllers
 {
@@ -18,14 +19,16 @@ namespace SalesCodeSpace.Controllers
         private readonly IBlobHelper _blobHelper;
         private readonly ICombosHelper _combosHelper;
         private readonly IMailHelper _mailHelper;
+        private readonly IFlashMessage _flashMessage;
 
-        public UsersController(DataContext context, IUserHelper userHelper, IBlobHelper blobHelper, ICombosHelper combosHelper, IMailHelper mailHelper)
+        public UsersController(DataContext context, IUserHelper userHelper, IBlobHelper blobHelper, ICombosHelper combosHelper, IMailHelper mailHelper, IFlashMessage flashMessage)
         {
             _context = context;
             _userHelper = userHelper;
             _blobHelper = blobHelper;
             _combosHelper = combosHelper;
             _mailHelper = mailHelper;
+            _flashMessage = flashMessage;
         }
 
         public async Task<IActionResult> Index()
@@ -70,7 +73,7 @@ namespace SalesCodeSpace.Controllers
                 User user = await _userHelper.AddUserAsync(model);
                 if (user == null)
                 {
-                    ModelState.AddModelError(string.Empty, "Este email já está a ser usado");
+                    _flashMessage.Info("Este email já está a ser usado");
                     model.Countries = await _combosHelper.GetComboCountriesAsync();
                     model.States = await _combosHelper.GetComboStatesAsync(model.CountryId);
                     model.Cities = await _combosHelper.GetComboCitiesAsync(model.StateId);
@@ -93,7 +96,7 @@ namespace SalesCodeSpace.Controllers
                         $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
                 if (response.IsSuccess)
                 {
-                    ViewBag.Message = "As instruções para poder entrar foram enviadas para o seu email.";
+                    _flashMessage.Info("As instruções para poder entrar foram enviadas para o seu email.");
                     return View(model);
                 }
 

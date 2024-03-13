@@ -4,17 +4,13 @@
     ViewData["Title"] = "Registar administradores";
 }
 
+<flash dismissable="true" /> 
 <h2>Criar novos administradores</h2>
 
-<h4>Administradores</h4>
 <hr />
-<div class="text-success">
-    <h3>
-        @ViewBag.Message
-    </h3>
-</div>
 <div class="row">
     <div class="col-md-12">
+        <h4>Administradores</h4>
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
