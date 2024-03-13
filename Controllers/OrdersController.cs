@@ -112,7 +112,7 @@ public class OrdersController : Controller
         return RedirectToAction(nameof(Details), new { Id = sale.Id });
     }
 
-    [Authorize(Roles = "Admin")]
+    /*[Authorize(Roles = "Admin")]
     public async Task<IActionResult> Confirm(int? id)
     {
         if (id == null)
@@ -139,7 +139,7 @@ public class OrdersController : Controller
         }
 
         return RedirectToAction(nameof(Details), new { Id = sale.Id });
-    }
+    }*/
 
 
     [Authorize(Roles = "Admin")]
@@ -168,6 +168,7 @@ public class OrdersController : Controller
 
         return RedirectToAction(nameof(Details), new { Id = sale.Id });
     }
+
 
     [Authorize(Roles = "User")]
     public async Task<IActionResult> MyOrders()
@@ -202,5 +203,34 @@ public class OrdersController : Controller
         return View(sale);
     }
 
+    [Authorize(Roles = "User")]
+    public async Task<IActionResult> Confirm(int? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        Sale sale = await _context.Sales.FindAsync(id);
+        if (sale == null)
+        {
+            return NotFound();
+        }
+
+        if (sale.OrderStatus != OrderStatus.Send)
+        {
+            _flashMessage.Danger("Só se podem confirmar pedidos que estejam no estado 'Enviado'.");
+        }
+        else
+        {
+            sale.OrderStatus = OrderStatus.Confirm;
+            _context.Sales.Update(sale);
+            await _context.SaveChangesAsync();
+            _flashMessage.Confirmation("O estado do pedido foi alterado para 'Confirmado'.");
+        }
+
+        return RedirectToAction(nameof(MyDetails), new { Id = sale.Id });
+
+    }
 }
 
