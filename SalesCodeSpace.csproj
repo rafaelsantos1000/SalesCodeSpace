@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Content Remove="Views/Orders/Index.cshtml" />
+    <Content Remove="Views/Orders/MyDetails.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +34,7 @@
     <_ContentIncludedByDefault Remove="Views/Home/Details.cshtml" />
     <_ContentIncludedByDefault Remove="Views/Home/OrderSuccess.cshtml" />
     <_ContentIncludedByDefault Remove="Views/Orders/Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views/Orders/MyDetails.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,6 +47,11 @@
 
   <ItemGroup>
     <None Include="Views/Orders/Index.cshtml" />
+    <None Include="Views/Orders/MyDetails.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views/Orders/MyDetails.cshtml" />
   </ItemGroup>
 
 </Project>
