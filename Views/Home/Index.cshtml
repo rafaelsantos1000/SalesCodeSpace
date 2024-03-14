@@ -18,9 +18,6 @@ ViewData["Title"] = "Inicio";
 </style>
 
 
-
-
-
 @if(Model.Quantity > 0)
 {
 <a asp-action="ShowCart" class="btn btn-outline-primary">Ver Carro de Compras (@Model.Quantity)</a>
@@ -84,6 +81,21 @@ ViewData["Title"] = "Inicio";
     <h3>Não existem produtos com o seu critério de pesquisa</h3>
     }
 </div>
+
+@{
+var prevDisabled = !Model.Products.HasPreviousPage ? "disabled" : "";
+var nextDisabled = !Model.Products.HasNextPage ? "disabled" : "";
+}
+
+<div class="mt-5">
+    <a asp-action="Index" asp-route-sortOrder="@ViewData["CurrentSort"]"
+        asp-route-pageNumber="@(Model.Products.PageIndex - 1)" asp-route-currentFilter="@ViewData["CurrentFilter"]" class="btn btn-warning @prevDisabled">Anterior
+    </a>
+    <a asp-action="Index" asp-route-sortOrder="@ViewData["CurrentSort"]"
+        asp-route-pageNumber="@(Model.Products.PageIndex + 1)" asp-route-currentFilter="@ViewData["CurrentFilter"]" class="btn btn-success @nextDisabled">Seguinte
+    </a>
+</div>
+
 
 @section Scripts {
 @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

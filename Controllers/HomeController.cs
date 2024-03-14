@@ -7,6 +7,7 @@ using SalesCodeSpace.Data.Entities;
 using SalesCodeSpace.Helpers;
 using SalesCodeSpace.Models;
 using SalesCodeSpace.Responses;
+using SalesCodeSpace.Utils;
 
 namespace SalesCodeSpace.Controllers;
 
@@ -25,17 +26,29 @@ public class HomeController : Controller
         _ordersHelper = ordersHelper;
     }
 
-    public async Task<IActionResult> Index(string sortOrder, string searchString)
+    public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
     {
+        ViewData["CurrentSort"] = sortOrder;
         ViewData["NameSortParm"] = string.IsNullOrEmpty(sortOrder) ? "NameDesc" : "";
         ViewData["PriceSortParm"] = sortOrder == "Price" ? "PriceDesc" : "Price";
+
+        if (searchString != null)
+        {
+            pageNumber = 1;
+        }
+        else
+        {
+            searchString = currentFilter;
+        }
+
         ViewData["CurrentFilter"] = searchString;
+
 
         IQueryable<Product> query = _context.Products
             .Include(p => p.ProductImages)
             .Include(p => p.ProductCategories)
             .ThenInclude(pc => pc.Category);
-            
+
         if (!string.IsNullOrEmpty(searchString))
         {
             query = query.Where(p => (p.Name.ToLower().Contains(searchString.ToLower()) ||
@@ -64,9 +77,11 @@ public class HomeController : Controller
                 break;
         }
 
+        int pageSize = 8;
+
         HomeViewModel model = new()
         {
-            Products = await query.ToListAsync(),
+            Products = await PaginatedList<Product>.CreateAsync(query, pageNumber ?? 1, pageSize),
             Categories = await _context.Categories.ToListAsync(),
         };
 
